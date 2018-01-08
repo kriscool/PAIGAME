@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="665.0" prefWidth="877.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.CardGameController">
+   <children>
+      <ImageView fx:id="first" fitHeight="150.0" fitWidth="200.0" layoutX="200.0" layoutY="500.0" onMouseClicked="#onSelectFirst" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="second" fitHeight="150.0" fitWidth="200.0" layoutX="250.0" layoutY="500.0" onMouseClicked="#onSelectSecond" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="thirdth" fitHeight="150.0" fitWidth="200.0" layoutX="300.0" layoutY="500.0" onMouseClicked="#onSelectThirdth" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="fourth" fitHeight="150.0" fitWidth="200.0" layoutX="350.0" layoutY="500.0" onMouseClicked="#onSelectFourth" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="fifth" fitHeight="150.0" fitWidth="200.0" layoutX="400.0" layoutY="500.0" onMouseClicked="#onSelectfive" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="sixth" fitHeight="150.0" fitWidth="200.0" layoutX="450.0" layoutY="500.0" onMouseClicked="#onSelectSixth" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="seventh" fitHeight="150.0" fitWidth="200.0" layoutX="500.0" layoutY="500.0" onMouseClicked="#onSelectSeven" pickOnBounds="true" preserveRatio="true" />
+   </children>
+</AnchorPane>
