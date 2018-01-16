@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<Serwer>
+	<DaneStartowe>
+		<Port>2222</Port>
+		<LiczbaGraczy>3</LiczbaGraczy>
+		<host>localhost</host>
+		<firstCard>50</firstCard>
+		<secondCard>150</secondCard>
+		<thirdCard>250</thirdCard>
+		<fourthCard>350</fourthCard>
+		<fifthCard>450</fifthCard>
+		<sixthCard>550</sixthCard>
+		<sevethCard>650</sevethCard>
+		<ypostion>500</ypostion>
+	</DaneStartowe>
+</Serwer>
