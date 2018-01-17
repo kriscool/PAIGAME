@@ -33,5 +33,6 @@
       <Text fx:id="score3" layoutX="450.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0" />
       <Button fx:id="pass" layoutX="685.0" layoutY="376.0" mnemonicParsing="false" onAction="#pass" text="pass" visible="false" />
       <Button fx:id="start" layoutX="271.0" layoutY="317.0" mnemonicParsing="false" onAction="#startGame" prefHeight="31.0" prefWidth="270.0" text="Start" visible="false" />
+      <Text fx:id="auction" layoutX="792.0" layoutY="364.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false" />
    </children>
 </AnchorPane>

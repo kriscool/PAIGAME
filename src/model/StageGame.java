@@ -11,8 +11,16 @@ public class StageGame {
         this.playerTurn=1;
         this.numberOfPlayers=0;
         this.gameState=0;
+        List<Auction> temp =new ArrayList<Auction>();
+        Auction a = new Auction();
+        temp.add(a);
+        temp.add(a);
+        temp.add(a);
+        this.auctions= temp;
+        cardDeal=false;
+
     }
-    public void StageGame(int playerTurn, Boolean endOfTheGame, Boolean endOfTurn, int colorChoice, int[] cardsPuts, int[] pointInTurn, List<Auction> auctions, int numberOfPlayers,int gameState) {
+    public void StageGame(int playerTurn, Boolean endOfTheGame, Boolean endOfTurn, int colorChoice, int[] cardsPuts, int[] pointInTurn, List<Auction> auctions, int numberOfPlayers,int gameState,int whichPlayerWinAuction) {
         this.playerTurn = playerTurn;
         this.endOfTheGame = endOfTheGame;
         this.endOfTurn = endOfTurn;
@@ -22,6 +30,7 @@ public class StageGame {
         this.auctions = auctions;
         this.numberOfPlayers = numberOfPlayers;
         this.gameState=gameState;
+        this.whichPlayerWinAuction=whichPlayerWinAuction;
     }
 
     public int getPlayerTurn() {
@@ -95,13 +104,16 @@ public class StageGame {
     private int colorChoice;
     private int[] cardsPuts = new int[3];
     private int[] pointInTurn = new int [3];
+    private int[] cardsToChange = new int[3];
     private int[][] cards = new int[4][7];
-    private List<Auction> auctions= new ArrayList<Auction>();
+    private List<Auction> auctions;
     private int numberOfPlayers=0;
     private int whichPairReport;
     private int gameState;
     private int idplayer;
     private Boolean isId=false;
+    private Boolean cardDeal;
+    private int whichPlayerWinAuction=3;
 
     public static StageGame getInstance(){
         if(stageGame == null){
@@ -148,5 +160,29 @@ public class StageGame {
 
     public void setId(Boolean id) {
         isId = id;
+    }
+
+    public Boolean getCardDeal() {
+        return cardDeal;
+    }
+
+    public void setCardDeal(Boolean cardDeal) {
+        this.cardDeal = cardDeal;
+    }
+
+    public int getWhichPlayerWinAuction() {
+        return whichPlayerWinAuction;
+    }
+
+    public void setWhichPlayerWinAuction(int whichPlayerWinAuction) {
+        this.whichPlayerWinAuction = whichPlayerWinAuction;
+    }
+
+    public int[] getCardsToChange() {
+        return cardsToChange;
+    }
+
+    public void setCardsToChange(int[] cardsToChange) {
+        this.cardsToChange = cardsToChange;
     }
 }

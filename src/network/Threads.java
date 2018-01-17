@@ -49,23 +49,23 @@ public class Threads  implements Runnable{
                 Gson gson = new GsonBuilder().create();
                 idClientInRoom =game.addClientToRoom(output);
 				idPlayers=idClientInRoom;
-				System.out.println("id gracza"+id);
+				//System.out.println("id gracza"+id);
 				StageGame stageGame = new StageGame();
 				stageGame.setIdplayer(idClientInRoom);
 				stageGame.setId(true);
                 game.sentToPlayer(gson.toJson(stageGame),output.toString());
-                System.out.println("Czeka na login");
+              //  System.out.println("Czeka na login");
 				ClientOfGame resultObject = gson.fromJson(input.readObject().toString(), ClientOfGame.class);
-				System.out.println("Login z gson" +resultObject.getName());
+			//	System.out.println("Login z gson" +resultObject.getName());
 				login=resultObject.getName();
 				stageGame.setId(false);
 				while(true){
 
-					StageGame response = gson.fromJson(input.readObject().toString(), StageGame.class);
-
-					while(!response.getEndOfTheGame()){
+                    StageGame response = gson.fromJson(input.readObject().toString(), StageGame.class);
+              //      System.out.println(response.getAuctions().get(1).getPrice());
+					if(!response.getEndOfTheGame()){
 						if(idPlayers==0){
-							System.out.println("id");
+				//			System.out.println("id");
 							response.setGameState(1);
 						}
 						switch (response.getGameState()){
@@ -76,6 +76,9 @@ public class Threads  implements Runnable{
 								auction(response);
 								break;
 							case 3:
+								changeCard(response);
+								break;
+							case 4:
 								turns(response);
 								break;
 
@@ -98,13 +101,16 @@ public class Threads  implements Runnable{
 
 	}
 
+	private void changeCard(StageGame response) {
+
+	}
+
 	private void cards(StageGame response) throws IOException {
         response.setCards(randCardToGame());
         Gson gson = new Gson();
 		response.setGameState(2);
 		response.setIdplayer(idClientInRoom);
-        //output.writeObject(gson.toJson(response));
-		System.out.println("Losuje karty");
+		response.setCardDeal(true);
 		idPlayers=4;
         game.sentToRoom(gson.toJson(response),output.toString());
 	}
@@ -123,27 +129,55 @@ public class Threads  implements Runnable{
         }
         tab[3][0]=obj.get(21);
         tab[3][1]=obj.get(22);
-        tab[3][0]=obj.get(23);
+        tab[3][2]=obj.get(23);
 
         return tab;
 
     }
 	private void turns(StageGame response) {
+    	System.out.println("Czwarta faza ostateczna");
 	}
 
-	private void auction(StageGame response) {
-	}
-
-/*
-
-	private int getMessege(String login) throws IOException, ClassNotFoundException {
-		try{
-				output.writeObject("1 " + login + "?");
-			} catch (IOException e) {
-				e.printStackTrace();
+	private void auction(StageGame response) throws IOException {
+        Boolean isOnePlayerInAuction=false;
+        Gson gson = new Gson();
+        int falseAuction=0;
+        for(int i=0;i<3;i++){
+            if(response.getAuctions().get(i).getOVer()==true){
+                falseAuction++;
+            }
+        }
+        if(response.getEndOfTurn()==false) {
+            if (falseAuction != 2) {
+                int tempPlayer = response.getIdplayer();
+                response.setPlayerTurn(changePlayer(tempPlayer));
+                game.sentToRoom(gson.toJson(response), output.toString());
+            }else{
+				for(int i=0;i<3;i++){
+					if(!(response.getAuctions().get(i).getPrice()==0)){
+					    response.setWhichPlayerWinAuction(i);
+                        response.setPlayerTurn(changePlayer(i));
+					}
+				}
+				response.setGameState(3);
+				game.sentToRoom(gson.toJson(response), output.toString());
+            	//System.out.println("Zakończono licytacje");
+				//System.out.println(gson.toJson(response));
 			}
-		return Integer.parseInt((input.readObject().toString().trim()));
+           // System.out.println("Pierwszy " + response.getAuctions().get(0).getPrice() +"Drugi " + response.getAuctions().get(1).getPrice()+"Trzeci " + response.getAuctions().get(2).getPrice());
+
+        }
 	}
-*/
+
+	private int changePlayer(int a){
+        if(a==0){
+            return 1;
+        }else if(a==1){
+            return  2;
+        }else{
+            return 0;
+        }
+    }
+
 
 }
