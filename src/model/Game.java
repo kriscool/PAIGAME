@@ -28,9 +28,28 @@ public class Game {
 		rooms = new ArrayList<>();
 		users = new ArrayList<>();
 	}
-	
-	public int addClientToRoom(ObjectOutputStream client){
 
+	public int howMuchPlayerInRoom(String outputStream){
+		for (Room room: rooms){
+			for(ObjectOutputStream e: room.outputStreams){
+				if(e.toString().equals(outputStream)){
+					return room.getNumberOfPlayer();
+				}
+			}
+		}
+		return 0;
+	}
+
+	public void removePlayerInRoom(String outputStream){
+		for (Room room: rooms){
+			for(ObjectOutputStream e: room.outputStreams){
+				if(e.toString().equals(outputStream)){
+					 room.removePlayerFromRoom(outputStream);
+				}
+			}
+		}
+	}
+	public int addClientToRoom(ObjectOutputStream client){
 		if(numberOfClient % 3 == 0){
 			Room r = new Room();
 			rooms.add(r);

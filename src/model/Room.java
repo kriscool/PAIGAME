@@ -17,7 +17,23 @@ public class Room {
 	public void addOutputStream(ObjectOutputStream e){
 		outputStreams.add(e);
 	}
-	
+
+	public int getNumberOfPlayer(){
+		int i=0;
+		for(ObjectOutputStream e:outputStreams) {
+			i++;
+		}
+		return i;
+	}
+
+	public void removePlayerFromRoom(String s){
+		for(ObjectOutputStream e : outputStreams){
+			if(s.equals(e.toString())){
+				outputStreams.remove(e);
+			}
+		}
+
+	}
 	public void writeToUsers(String s) throws IOException{
 		Gson gson = new GsonBuilder().create();
 		StageGame resultObject = gson.fromJson(s, StageGame.class);

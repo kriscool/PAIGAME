@@ -23,7 +23,8 @@ public class Threads  implements Runnable{
     Game game;
 	int idPlayers;
 	int idClientInRoom;
-    
+    Boolean gameStarted=false;
+    Gson gson = new Gson();
     public Threads(Socket sock,int id, Serwer serwer,Game game){
     	this.socket = sock;
     	this.id = id;
@@ -49,52 +50,55 @@ public class Threads  implements Runnable{
                 Gson gson = new GsonBuilder().create();
                 idClientInRoom =game.addClientToRoom(output);
 				idPlayers=idClientInRoom;
-				//System.out.println("id gracza"+id);
 				StageGame stageGame = new StageGame();
 				stageGame.setIdplayer(idClientInRoom);
 				stageGame.setId(true);
                 game.sentToPlayer(gson.toJson(stageGame),output.toString());
-              //  System.out.println("Czeka na login");
 				ClientOfGame resultObject = gson.fromJson(input.readObject().toString(), ClientOfGame.class);
-			//	System.out.println("Login z gson" +resultObject.getName());
+
 				login=resultObject.getName();
 				stageGame.setId(false);
 				while(true){
 
                     StageGame response = gson.fromJson(input.readObject().toString(), StageGame.class);
-              //      System.out.println(response.getAuctions().get(1).getPrice());
+                    if(response.getEndOfTheGame()==true) {
+                        System.out.println("Disconect" + Integer.toString(idClientInRoom));
+                        input.close();
+                        output.close();
+                        socket.close();
+                        System.exit(1);
+                    }
 					if(!response.getEndOfTheGame()){
 						if(idPlayers==0){
-				//			System.out.println("id");
 							response.setGameState(1);
+							gameStarted=true;
 						}
-						switch (response.getGameState()){
-							case 1:
-								cards(response);
-								break;
-							case 2:
-								auction(response);
-								break;
-							case 3:
-								changeCard(response);
-								break;
-							case 4:
-								turns(response);
-								break;
 
-						}
+							switch (response.getGameState()) {
+								case 1:
+									cards(response);
+									break;
+								case 2:
+									auction(response);
+									break;
+								case 3:
+									changeCard(response);
+									break;
+								case 4:
+									turns(response);
+									break;
+
+							}
+
 					}
 
-					if(response.getEndOfTheGame()==true) {
-                        break;
-                    }
+
+
 				}
-			    input.close();
-		        output.close();
-		        socket.close();
-		
+
+
 			} catch (IOException e) {
-			    System.out.println(e);
+
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -134,10 +138,69 @@ public class Threads  implements Runnable{
         return tab;
 
     }
-	private void turns(StageGame response) {
-    	System.out.println("Czwarta faza ostateczna");
+	private void turns(StageGame response) throws IOException {
+        int[] tab = response.getCardsPuts();
+
+
+		if(response.isThreeCardPuts()){
+            response.setPlayerTurn(changePlayer(response.getPlayerTurn()));
+            game.sentToRoom(gson.toJson(response), output.toString());
+            //Tutaj będzie sprawdzane kto wygrał
+
+            response.setEndOfTurn(true);
+            response.setPlayerTurn(whoWin(response));
+            System.out.println(Integer.toString(whoWin(response)));
+            game.sentToRoom(gson.toJson(response), output.toString());
+
+
+        }else if(response.isThreeCardNull()){
+            game.sentToRoom(gson.toJson(response), output.toString());
+        }else{
+            if(isFirstCard(tab)) {
+                for (int i = 0; i < 3; i++) {
+                    if (tab[i] != 0) {
+                        response.setFirstCardPut(tab[i]);
+                    }
+                }
+            }
+            response.setPlayerTurn(changePlayer(response.getPlayerTurn()));
+            game.sentToRoom(gson.toJson(response), output.toString());
+        }
 	}
 
+	public int whoWin(StageGame response){
+        if(response.getColorChoice()==0) {
+            ///Poprawić bo jest chujowe xD
+
+            int[] tabTemp = response.getCardsPuts();
+            if (tabTemp[0] > tabTemp[1]) {
+                if (tabTemp[0] > tabTemp[2]) {
+                    return 0;
+                } else {
+                    return 2;
+                }
+            } else if (tabTemp[1] > tabTemp[2]) {
+                return 1;
+            } else {
+                return 2;
+            }
+        }else{
+            return 0;
+        }
+
+    }
+    private Boolean isFirstCard(int[] tab){
+        int count =0;
+        for(int i=0;i<3;i++){
+            if(tab[i]==0){
+                count++;
+            }
+        }
+        if(count==2){
+            return true;
+        }
+        return false;
+    }
 	private void auction(StageGame response) throws IOException {
         Boolean isOnePlayerInAuction=false;
         Gson gson = new Gson();
@@ -156,15 +219,12 @@ public class Threads  implements Runnable{
 				for(int i=0;i<3;i++){
 					if(!(response.getAuctions().get(i).getPrice()==0)){
 					    response.setWhichPlayerWinAuction(i);
-                        response.setPlayerTurn(changePlayer(i));
+                        response.setPlayerTurn(i);
 					}
 				}
 				response.setGameState(3);
 				game.sentToRoom(gson.toJson(response), output.toString());
-            	//System.out.println("Zakończono licytacje");
-				//System.out.println(gson.toJson(response));
 			}
-           // System.out.println("Pierwszy " + response.getAuctions().get(0).getPrice() +"Drugi " + response.getAuctions().get(1).getPrice()+"Trzeci " + response.getAuctions().get(2).getPrice());
 
         }
 	}

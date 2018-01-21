@@ -95,13 +95,46 @@ public class CardGameController {
     @FXML
     Button start;
     @FXML
+    Button setBid;
+    @FXML
     public void setAcceptCard() throws IOException {
-        if(stageGame.getGameState()==3 && cardChooseToChang==3){
-            setCards(modelClientGame.getCardToChange(),cardsToChange);
-            stageGame.setGameState(4);
-            output.writeObject(gson.toJson(stageGame));
+        if(!stageGame.getEndOfTurn()) {
+            if (stageGame.getGameState() == 3 && cardChooseToChang == 3) {
+                setCards(modelClientGame.getCardToChange(), cardsToChange);
+                stageGame.setGameState(4);
+                setBid.setVisible(true);
+                pass.setVisible(false);
+                btnSetPoints.setVisible(false);
+                // output.writeObject(gson.toJson(stageGame));
+            } else if (stageGame.getGameState() == 4 && (stageGame.getPlayerTurn() == modelClientGame.getIdPlayer() && whichCardIsSelected != 0)
+                    ) {
+
+                int card = whichCardIsSelected;
+                stageGame.setCardPutPlayer(modelClientGame.getIdPlayer(), modelClientGame.getCard(--card));
+                //System.out.println(Integer.toString(modelClientGame.getCard(card)));
+                stageGame.setPlayerTurn(modelClientGame.getIdPlayer());
+                output.writeObject(gson.toJson(stageGame));
+
+            }
         }
     }
+
+    @FXML
+    public void setBid() throws IOException {
+        if(!points.getText().isEmpty()) {
+            try {
+                stageGame.setBid(Integer.parseInt(points.getText()));
+            }catch (NumberFormatException e){
+                auction.setText("Podaj liczby");
+            }
+            output.writeObject(gson.toJson(stageGame));
+
+        }else {
+            text.setText("Podaj o ile grasz");
+        }
+
+    }
+
 
     public void setCards(int[] number,ArrayList<Integer> numberToChange){
         Image im2;
@@ -110,33 +143,41 @@ public class CardGameController {
                 case 1:
                     im2 = new Image("Card/"+Integer.toString(number[i])+".png");
                     first.setImage(im2);
+                    first.setLayoutY(configuration.getYposition());
                     break;
                 case 2:
                     im2 = new Image("Card/"+Integer.toString(number[i])+".png");
                     second.setImage(im2);
+                    second.setLayoutY(configuration.getYposition());
                     break;
                 case 3:
                     im2 = new Image("Card/"+Integer.toString(number[i])+".png");
                     thirdth.setImage(im2);
+                    thirdth.setLayoutY(configuration.getYposition());
                     break;
                 case 4:
                     im2 = new Image("Card/"+Integer.toString(number[i])+".png");
                     fourth.setImage(im2);
+                    fourth.setLayoutY(configuration.getYposition());
                     break;
                 case 5:
                     im2 = new Image("Card/"+Integer.toString(number[i])+".png");
                     fifth.setImage(im2);
+                    fifth.setLayoutY(configuration.getYposition());
                     break;
                 case 6:
                     im2 = new Image("Card/"+Integer.toString(number[i])+".png");
                     sixth.setImage(im2);
+                    sixth.setLayoutY(configuration.getYposition());
                     break;
                 case 7:
                     im2 = new Image("Card/"+Integer.toString(number[i])+".png");
                     seventh.setImage(im2);
+                    seventh.setLayoutY(configuration.getYposition());
                     break;
             }
         }
+        modelClientGame.changeCardBeforeBid(number,numberToChange);
     }
 
     @FXML
@@ -220,41 +261,25 @@ public class CardGameController {
     public void initialize(){
         stageGame=StageGame.getInstance();
         configuration=Configuration.getInstance();
-        cardsToChange.add(0);
-        cardsToChange.add(0);
-        cardsToChange.add(0);
-
 
     }
 
     public void onSelectFirst() {
         Boolean isSelected=false;
         if(cardChooseToChang<3 && stageGame.getGameState()==3 && (stageGame.getWhichPlayerWinAuction()==modelClientGame.getIdPlayer())) {
-            for(int i=0;i<3;i++){
-                if((cardsToChange.get(i)==1)){
-                    isSelected=true;
-                }
-            }
-            if(!isSelected){
-                first.setLayoutX(configuration.getFirstCardPostion());
-                first.setLayoutY(configuration.getYposition()-30);
-                cardsToChange.set(cardChooseToChang,1);
-                cardChooseToChang++;
-            }else{
-                cardsToChange.set(cardChooseToChang,0);
-                thirdth.setLayoutY(configuration.getYposition() + 30);
-                cardChooseToChang--;
-                isSelected=false;
 
-            }
+                first.setLayoutY(configuration.getYposition()-30);
+                cardChooseToChang++;
+                cardsToChange.add(1);
+
 
         }else {
-            if (isSelected && whichCardIsSelected == 1 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+            if (isSelected && whichCardIsSelected == 1 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) ) {
                 first.setLayoutX(configuration.getFirstCardPostion());
                 first.setLayoutY(configuration.getYposition());
                 isSelected = false;
                 whichCardIsSelected = 0;
-            } else if (whichCardIsSelected == 0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+            } else if (whichCardIsSelected == 0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())&& (modelClientGame.getCardCanBePut(0)==true || stageGame.getFirstCardPut()==0)) {
                 first.setLayoutX(300);
                 first.setLayoutY(300);
                 isSelected = true;
@@ -265,32 +290,19 @@ public class CardGameController {
 
     public void onSelectSecond(){
 
-        if(cardChooseToChang<3 && stageGame.getGameState()==3  && (stageGame.getWhichPlayerWinAuction()==modelClientGame.getIdPlayer())) {
-            Boolean isSelected=false;
-            for(int i=0;i<3;i++){
-                if((cardsToChange.get(i)==2)){
-                    isSelected=true;
-                }
-            }
-            if(!isSelected){
-                second.setLayoutX(configuration.getSecondCardPostion());
-                second.setLayoutY(configuration.getYposition()-30);
-                cardsToChange.set(cardChooseToChang,2);
-                cardChooseToChang++;
-            }else{
-                cardsToChange.set(cardChooseToChang,0);
-                thirdth.setLayoutY(configuration.getYposition() + 30);
-                cardChooseToChang--;
-                isSelected=false;
+        if(cardChooseToChang<3 && stageGame.getGameState()==3  && (stageGame.getWhichPlayerWinAuction()==modelClientGame.getIdPlayer()) ) {
 
-            }
+                second.setLayoutY(configuration.getYposition()-30);
+                cardChooseToChang++;
+                cardsToChange.add(2);
+
         }else {
-        if (isSelected && whichCardIsSelected==2 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+        if (isSelected && whichCardIsSelected==2 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(1)==true)) {
             second.setLayoutX(configuration.getSecondCardPostion());
             second.setLayoutY(configuration.getYposition());
             isSelected=false;
             whichCardIsSelected=0;
-        }else if( whichCardIsSelected==0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())){
+        }else if( whichCardIsSelected==0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(1)==true || stageGame.getFirstCardPut()==0)){
             second.setLayoutX(300);
             second.setLayoutY(300);
             isSelected=true;
@@ -300,31 +312,18 @@ public class CardGameController {
 
     public void onSelectThirdth(){
         if(cardChooseToChang<3 && stageGame.getGameState()==3  && (stageGame.getWhichPlayerWinAuction()==modelClientGame.getIdPlayer())) {
-            Boolean isSelected=false;
-            for(int i=0;i<3;i++){
-                if((cardsToChange.get(i)==3)){
-                    isSelected=true;
-                }
-            }
-            if(!isSelected) {
-                thirdth.setLayoutX(configuration.getThirdCardPostion());
-                thirdth.setLayoutY(configuration.getYposition() - 30);
-                cardsToChange.set(cardChooseToChang,3);
-                cardChooseToChang++;
-            }else{
-                cardsToChange.set(cardChooseToChang,0);
-                thirdth.setLayoutY(configuration.getYposition() + 30);
-                cardChooseToChang--;
-                isSelected=false;
 
-            }
+                thirdth.setLayoutY(configuration.getYposition() - 30);
+                cardChooseToChang++;
+                cardsToChange.add(3);
+
         }else {
-            if (isSelected && whichCardIsSelected == 3 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+            if (isSelected && whichCardIsSelected == 3 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(2)==true)) {
                 thirdth.setLayoutX(configuration.getThirdCardPostion());
                 thirdth.setLayoutY(configuration.getYposition());
                 isSelected = false;
                 whichCardIsSelected = 0;
-            } else if (whichCardIsSelected == 0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+            } else if (whichCardIsSelected == 0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(2)==true || stageGame.getFirstCardPut()==0)) {
                 thirdth.setLayoutX(300);
                 thirdth.setLayoutY(300);
                 isSelected = true;
@@ -335,31 +334,18 @@ public class CardGameController {
 
     public void onSelectFourth(){
         if(cardChooseToChang<3 && stageGame.getGameState()==3  &&  (stageGame.getWhichPlayerWinAuction()==modelClientGame.getIdPlayer())) {
-            Boolean isSelected=false;
-            for(int i=0;i<3;i++){
-                if((cardsToChange.get(i)==4)){
-                    isSelected=true;
-                }
-            }
-            if(!isSelected) {
-                fourth.setLayoutX(configuration.getFourthCardPostion());
-                fourth.setLayoutY(configuration.getYposition() - 30);
-                cardsToChange.set(cardChooseToChang,4);
-                cardChooseToChang++;
-            }else{
-                cardsToChange.set(cardChooseToChang,0);
-                thirdth.setLayoutY(configuration.getYposition() + 30);
-                cardChooseToChang--;
-                isSelected=false;
 
-            }
+                fourth.setLayoutY(configuration.getYposition() - 30);
+                cardChooseToChang++;
+                cardsToChange.add(4);
+
         }else {
-            if (isSelected && whichCardIsSelected == 4 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+            if (isSelected && whichCardIsSelected == 4 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(3)==true)) {
                 fourth.setLayoutX(configuration.getFourthCardPostion());
                 fourth.setLayoutY(configuration.getYposition());
                 isSelected = false;
                 whichCardIsSelected = 0;
-            } else if (whichCardIsSelected == 0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+            } else if (whichCardIsSelected == 0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(3)==true || stageGame.getFirstCardPut()==0)) {
                 fourth.setLayoutX(300);
                 fourth.setLayoutY(300);
                 isSelected = true;
@@ -370,31 +356,18 @@ public class CardGameController {
 
     public void onSelectfive(){
         if(cardChooseToChang<3 && stageGame.getGameState()==3  &&  (stageGame.getWhichPlayerWinAuction()==modelClientGame.getIdPlayer())) {
-            Boolean isSelected=false;
-            for(int i=0;i<3;i++){
-                if((cardsToChange.get(i)==5)){
-                    isSelected=true;
-                }
-            }
-            if(!isSelected) {
-                fifth.setLayoutX(configuration.getFifthCardPostion());
-                fifth.setLayoutY(configuration.getYposition() - 30);
-                cardsToChange.set(cardChooseToChang,5);
-                cardChooseToChang++;
-            }else{
-                cardsToChange.set(cardChooseToChang,0);
-                thirdth.setLayoutY(configuration.getYposition() + 30);
-                cardChooseToChang--;
-                isSelected=false;
 
-            }
+                fifth.setLayoutY(configuration.getYposition() - 30);
+                cardChooseToChang++;
+                cardsToChange.add(5);
+
         }else {
-        if (isSelected && whichCardIsSelected==5 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+        if (isSelected && whichCardIsSelected==5 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(4)==true)) {
             fifth.setLayoutX(configuration.getFifthCardPostion());
             fifth.setLayoutY(configuration.getYposition());
             isSelected=false;
             whichCardIsSelected=0;
-        }else if( whichCardIsSelected==0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+        }else if( whichCardIsSelected==0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(4)==true || stageGame.getFirstCardPut()==0)) {
 
             fifth.setLayoutX(300);
             fifth.setLayoutY(300);
@@ -406,32 +379,18 @@ public class CardGameController {
 
     public void onSelectSixth(){
         if(cardChooseToChang<3 && stageGame.getGameState()==3  && (stageGame.getWhichPlayerWinAuction()==modelClientGame.getIdPlayer())) {
-            Boolean isSelected=false;
-            for(int i=0;i<3;i++){
-                if((cardsToChange.get(i)==6)){
-                    isSelected=true;
-                }
-            }
-            if(!isSelected) {
-                sixth.setLayoutX(configuration.getSixthCardPostion());
+
                 sixth.setLayoutY(configuration.getYposition() - 30);
-
-                cardsToChange.set(cardChooseToChang,6);
                 cardChooseToChang++;
-            }else{
-                cardsToChange.set(cardChooseToChang,0);
-                thirdth.setLayoutY(configuration.getYposition() + 30);
-                cardChooseToChang--;
-                isSelected=false;
+                cardsToChange.add(6);
 
-            }
         }else {
-        if (isSelected && whichCardIsSelected==6 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+        if (isSelected && whichCardIsSelected==6 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(5)==true)) {
             sixth.setLayoutX(configuration.getSixthCardPostion());
             sixth.setLayoutY(configuration.getYposition());
             isSelected=false;
             whichCardIsSelected=0;
-        }else if( whichCardIsSelected==0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+        }else if( whichCardIsSelected==0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(5)==true || stageGame.getFirstCardPut()==0)) {
             sixth.setLayoutX(300);
             sixth.setLayoutY(300);
             isSelected = true;
@@ -442,31 +401,17 @@ public class CardGameController {
 
     public void onSelectSeven(){
         if(cardChooseToChang<3 && stageGame.getGameState()==3  && (stageGame.getWhichPlayerWinAuction()==modelClientGame.getIdPlayer())) {
-            Boolean isSelected=false;
-            for(int i=0;i<3;i++){
-                if((cardsToChange.get(i)==7)){
-                    isSelected=true;
-                }
-            }
-            if(!isSelected) {
-                seventh.setLayoutX(configuration.getSeventhCardPosition());
                 seventh.setLayoutY(configuration.getYposition() - 30);
-                cardsToChange.set(cardChooseToChang,7);
                 cardChooseToChang++;
-            }else{
-                cardsToChange.set(cardChooseToChang,0);
-                thirdth.setLayoutY(configuration.getYposition() + 30);
-                cardChooseToChang--;
-                isSelected=false;
+                cardsToChange.add(7);
 
-            }
         }else {
-        if (isSelected && whichCardIsSelected==7 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+        if (isSelected && whichCardIsSelected==7 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(6)==true)) {
             seventh.setLayoutX(configuration.getSeventhCardPosition());
             seventh.setLayoutY(configuration.getYposition());
             isSelected=false;
             whichCardIsSelected=0;
-        }else if( whichCardIsSelected==0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer())) {
+        }else if( whichCardIsSelected==0 && (stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()) && (modelClientGame.getCardCanBePut(6)==true || stageGame.getFirstCardPut()==0)) {
             seventh.setLayoutX(300);
             seventh.setLayoutY(300);
             isSelected = true;
@@ -482,17 +427,25 @@ public class CardGameController {
 
 
     @FXML
-    private void bump(ActionEvent event) throws IOException {
-        System.out.println(Integer.toString(stageGame.getGameState()));
+    private void bump(ActionEvent event)  {
+
         if(stageGame.getGameState()==2){
             if(stageGame.getPlayerTurn()==stageGame.getIdplayer()){
-                if(points.getText()!=null){
+               try{
+               if(points.getText()!=null && (Integer.parseInt(points.getText())>Integer.parseInt(auction.getText())) && (Integer.parseInt(points.getText())>100 && Integer.parseInt(points.getText())<300)){
                     List<Auction> tempList = stageGame.getAuctions();
                     tempList.set(stageGame.getIdplayer(), new Auction(Integer.parseInt(points.getText()), false));
                     stageGame.setAuctions(tempList);
                     stageGame.setEndOfTurn(false);
-                    output.writeObject(gson.toJson(stageGame));
+                    try {
+                        output.writeObject(gson.toJson(stageGame));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+               }
+               catch(NumberFormatException e)
+               {text.setText("Podaj liczby nie litery");}
             }
         }
     }
@@ -519,47 +472,119 @@ public class CardGameController {
 
     @FXML
     private void test(ActionEvent event) throws IOException {
-        start.setVisible(true);
-        text.setText("Poczekaj na przeciwnikow");
-        playButton.setVisible(false);
-        loginText.setVisible(false);
-        ParseXml p = new ParseXml();
+        if (!loginText.getText().isEmpty()) {
+            start.setVisible(true);
+            text.setText("Poczekaj na przeciwnikow");
+            playButton.setVisible(false);
+            loginText.setVisible(false);
+            ParseXml p = new ParseXml();
 
-        Configuration configuration = Configuration.getInstance();
+            Configuration configuration = Configuration.getInstance();
 
-        try {
-            clientSocket = new Socket(configuration.getNameHost(), configuration.getPort());
-            output = new ObjectOutputStream(clientSocket.getOutputStream());
-           input = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (UnknownHostException e) {
-            System.err.println(e);
-        } catch (IOException e) {
-            System.err.println(e);
+            try {
+                clientSocket = new Socket(configuration.getNameHost(), configuration.getPort());
+                output = new ObjectOutputStream(clientSocket.getOutputStream());
+                input = new ObjectInputStream(clientSocket.getInputStream());
+            } catch (UnknownHostException e) {
+                System.err.println(e);
+            } catch (IOException e) {
+                System.err.println(e);
+            }
+            gson = new Gson();
+            modelClientGame.setSockets(clientSocket,output,input);
+
+            ClientOfGame client = new ClientOfGame();
+            client.setName(loginText.getText());
+            try {
+                output.writeObject(gson.toJson(client));
+            }catch (NullPointerException e){
+                System.exit(1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ImageView[] imageViews = new ImageView[7];
+
+            imageViews[0] = first;
+            imageViews[1] = second;
+            imageViews[2] = thirdth;
+            imageViews[3] = fourth;
+            imageViews[4] = fifth;
+            imageViews[5] = sixth;
+            imageViews[6] = seventh;
+
+            Messeges inputClass = new Messeges(stageGame.getIdplayer(), input, text, firstOponent, secondOponent, score1, score2, score3, stageGame, imageViews, idPlayer, auction, modelClientGame);
+            Thread t1 = new Thread(inputClass);
+            t1.start();
+
+        }else {
+            text.setText("Nie podałeś loginu");
         }
-        gson = new Gson();
+    }
+    private Boolean[] cardCandPuts={false,false,false,false,false,false,false};
 
+    public void whichCardCanPut(int firstCard){
+        if(firstCard>0 && firstCard<7){
+            for(int i=0;i<7;i++){
+                if(modelClientGame.getCard(i)>0 && modelClientGame.getCard(i)<7){
+                    cardCandPuts[i]=true;
+                }
+            }
+        }else  if(firstCard>6 && firstCard<13){
+            for(int i=0;i<7;i++){
+                if(modelClientGame.getCard(i)>6 && modelClientGame.getCard(i)<13){
+                    cardCandPuts[i]=true;
+                }
+            }
+        }else  if(firstCard>12 && firstCard<19){
+            for(int i=0;i<7;i++){
+                if(modelClientGame.getCard(i)>12 && modelClientGame.getCard(i)<19){
+                    cardCandPuts[i]=true;
+                }
+            }
 
-        ClientOfGame client = new ClientOfGame();
-        client.setName(loginText.getText());
-        try {
-            output.writeObject(gson.toJson(client));
-        } catch (IOException e) {
-            e.printStackTrace();
+        }else  if(firstCard>18 && firstCard<24){
+            for(int i=0;i<7;i++){
+                if(modelClientGame.getCard(i)>18 && modelClientGame.getCard(i)<24){
+                    cardCandPuts[i]=true;
+                }
+            }
+        }else if(stageGame.getColorChoice()!=0){
+            if(stageGame.getColorChoice()==1){
+                for(int i=0;i<7;i++){
+                    if(modelClientGame.getCard(i)>0 && modelClientGame.getCard(i)<7){
+                        cardCandPuts[i]=true;
+                    }
+                }
+            }else  if(stageGame.getColorChoice()==2){
+                for(int i=0;i<7;i++){
+                    if(modelClientGame.getCard(i)>6 && modelClientGame.getCard(i)<13){
+                        cardCandPuts[i]=true;
+                    }
+                }
+            }else  if(stageGame.getColorChoice()==3){
+                for(int i=0;i<7;i++){
+                    if(modelClientGame.getCard(i)>12 && modelClientGame.getCard(i)<19){
+                        cardCandPuts[i]=true;
+                    }
+                }
+            }else  if(stageGame.getColorChoice()==4){
+                for(int i=0;i<7;i++){
+                    if(modelClientGame.getCard(i)>18 && modelClientGame.getCard(i)<24){
+                        cardCandPuts[i]=true;
+                    }
+                }
+            }
+        }else{
+            for(int i=0;i<7;i++){
+                    cardCandPuts[i]=true;
+            }
         }
-        ImageView[] imageViews = new ImageView[7];
-
-        imageViews[0]=first;
-        imageViews[1]=second;
-        imageViews[2]=thirdth;
-        imageViews[3]=fourth;
-        imageViews[4]=fifth;
-        imageViews[5]=sixth;
-        imageViews[6]=seventh;
-
-        Messeges inputClass = new Messeges(stageGame.getIdplayer(),input,text,firstOponent,secondOponent,score1,score2,score3,stageGame,imageViews,idPlayer,auction,modelClientGame);
-        Thread t1 = new Thread(inputClass);
-        t1.start();
-
     }
 
+
+    public void End() throws IOException {
+        modelClientGame.closeScoket();
+        stageGame.setEndOfTheGame(true);
+        output.writeObject(gson.toJson(stageGame));
+    }
 }

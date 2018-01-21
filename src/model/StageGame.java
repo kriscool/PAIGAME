@@ -20,7 +20,7 @@ public class StageGame {
         cardDeal=false;
 
     }
-    public void StageGame(int playerTurn, Boolean endOfTheGame, Boolean endOfTurn, int colorChoice, int[] cardsPuts, int[] pointInTurn, List<Auction> auctions, int numberOfPlayers,int gameState,int whichPlayerWinAuction) {
+    public void StageGame(int playerTurn, Boolean endOfTheGame, Boolean endOfTurn, int colorChoice, int[] cardsPuts, int[] pointInTurn, List<Auction> auctions, int numberOfPlayers,int gameState,int whichPlayerWinAuction,int firstCardPut) {
         this.playerTurn = playerTurn;
         this.endOfTheGame = endOfTheGame;
         this.endOfTurn = endOfTurn;
@@ -31,6 +31,7 @@ public class StageGame {
         this.numberOfPlayers = numberOfPlayers;
         this.gameState=gameState;
         this.whichPlayerWinAuction=whichPlayerWinAuction;
+        this.firstCardPut=firstCardPut;
     }
 
     public int getPlayerTurn() {
@@ -102,7 +103,7 @@ public class StageGame {
     private Boolean endOfTheGame=false;
     private Boolean endOfTurn=false;
     private int colorChoice;
-    private int[] cardsPuts = new int[3];
+    private int[] cardsPuts = {0,0,0};
     private int[] pointInTurn = new int [3];
     private int[] cardsToChange = new int[3];
     private int[][] cards = new int[4][7];
@@ -114,7 +115,22 @@ public class StageGame {
     private Boolean isId=false;
     private Boolean cardDeal;
     private int whichPlayerWinAuction=3;
+    private int bid;
+    private int firstCardPut;
+    public Boolean isThreeCardPuts(){
+        if(cardsPuts[0]!=0 && cardsPuts[1]!=0 && cardsPuts[2]!=0)
+            return true;
+        return false;
+    }
 
+    public Boolean isThreeCardNull(){
+        if(cardsPuts[0]==0 && cardsPuts[1]==0 && cardsPuts[2]==0)
+            return true;
+        return false;
+    }
+    public void setCardPutPlayer(int idplayer,int card){
+        cardsPuts[idplayer]=card;
+    }
     public static StageGame getInstance(){
         if(stageGame == null){
             stageGame = new StageGame();
@@ -184,5 +200,21 @@ public class StageGame {
 
     public void setCardsToChange(int[] cardsToChange) {
         this.cardsToChange = cardsToChange;
+    }
+
+    public int getBid() {
+        return bid;
+    }
+
+    public void setBid(int bid) {
+        this.bid = bid;
+    }
+
+    public int getFirstCardPut() {
+        return firstCardPut;
+    }
+
+    public void setFirstCardPut(int firstCardPut) {
+        this.firstCardPut = firstCardPut;
     }
 }

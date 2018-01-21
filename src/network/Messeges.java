@@ -13,6 +13,7 @@ import model.StageGame;
 import java.awt.*;
 import java.io.ObjectInputStream;
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.List;
 
 public class Messeges implements Runnable {
@@ -51,41 +52,57 @@ public class Messeges implements Runnable {
 	public void run(){
 		while(true){
 			Object obj = null;
+			if(stageGame.getEndOfTheGame()==true){
+                System.exit(1);
+            }
 			try {
 				obj = mes.readObject();
-			} catch (ClassNotFoundException | IOException  e) {
+			} catch (SocketException sock) {
+			    stageGame.setEndOfTheGame(true);
+			    text.setText("Gra została przerwana przepraszamy");
+			    System.exit(1);
+            } catch (ClassNotFoundException | IOException  e ) {
 				e.printStackTrace();
 			}
-			if(obj != null){
+            if(obj != null){
 				String message = obj.toString();
-				System.out.println(message);
+				//System.out.println(message);
                 Gson gson = new GsonBuilder().create();
 
                 StageGame resultObject = gson.fromJson(message, StageGame.class);
-                System.out.println(message);
+                //System.out.println(message);
                 if(resultObject.getId()==true){
                     player=resultObject.getIdplayer();
                     stageGame.setIdplayer(player);
                     modelClientGame.setIdPlayer(player);
                 }
-               stageGame.StageGame(resultObject.getPlayerTurn(),resultObject.getEndOfTheGame(),resultObject.getEndOfTurn(),resultObject.getColorChoice(),resultObject.getCardsPuts(),resultObject.getPointInTurn(),resultObject.getAuctions(),3,resultObject.getGameState(),resultObject.getWhichPlayerWinAuction());
+               stageGame.StageGame(resultObject.getPlayerTurn(),resultObject.getEndOfTheGame(),resultObject.getEndOfTurn(),resultObject.getColorChoice(),resultObject.getCardsPuts(),resultObject.getPointInTurn(),resultObject.getAuctions(),3,resultObject.getGameState(),resultObject.getWhichPlayerWinAuction(),resultObject.getFirstCardPut());
 
                 if(resultObject.getGameState()==2 && resultObject.getCardDeal()==true) {
-                    text.setText("Licytacja");
+                    String a = "Licytacja";
+                    if(stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()){
+                        a+=" Twój ruch";
+                    }
+                    text.setText(a);
 					int[][] temp = resultObject.getCards();
 
 					for (int i = 0; i < 7; i++) {
-
 						Image im = new javafx.scene.image.Image("Card/" + Integer.toString(temp[player][i]) + ".png");
 						imageViews[i].setImage(im);
 					}
 					tabCardToChange[0]=temp[3][0];
                     tabCardToChange[1]=temp[3][1];
                     tabCardToChange[2]=temp[3][2];
+                    modelClientGame.setCards(temp[player]);
                     modelClientGame.setCardToChange(tabCardToChange);
-                    text.setText(Integer.toString(tabCardToChange[0]) + " " +Integer.toString(tabCardToChange[1]) + " "+Integer.toString(tabCardToChange[2]) + " ");
+                    //text.setText(Integer.toString(tabCardToChange[0]) + " " +Integer.toString(tabCardToChange[1]) + " "+Integer.toString(tabCardToChange[2]) + " ");
 				}
 				if(resultObject.getGameState()==2){
+                    String a = "Licytacja";
+                    if(stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()){
+                        a+=" Twój ruch";
+                    }
+                    text.setText(a);
                 	List<Auction> temp = resultObject.getAuctions();
 					int wynik = temp.get(0).getPrice();
 					for (int i=1; i<3; i++) {
@@ -97,18 +114,80 @@ public class Messeges implements Runnable {
 				}
 
 				if(resultObject.getGameState()==3){
+                    String a = "";
+                    if(stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()){
+                        a+=" Wybierz o ile grasz";
+                    }
+                    text.setText(a);
                     stageGame.setCardsToChange(tabCardToChange);
                 }
+                if(stageGame.getFirstCardPut()!=0){
+                    modelClientGame.setCardCanToBePut(stageGame.getFirstCardPut(),stageGame.getColorChoice());
+                }
+                if(resultObject.getGameState()==4){
+                    String a = "Gramy o"+ Integer.toString(stageGame.getBid());
+                    if(stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()){
+                        a+=" Twój ruch";
+                    }
+                    text.setText(a);
+                    setCardOnView(stageGame.getCardsPuts());
+				}
+				System.out.println(message);
 				if(message.equalsIgnoreCase("Dowidzenia")){
 					flag = false;
 					System.exit(1);
 					break;
 				}
 				else{
-					System.out.println(message);
+					//
 				}
 			}
 		}
 		
 	}
+
+	public void setCardOnView(int[] temp) {
+        if (modelClientGame.getIdPlayer() == 0) {
+            if (temp[1] != 0 && temp[2] != 0) {
+                Image im = new javafx.scene.image.Image("Card/" + Integer.toString(temp[1]) + ".png");
+                imageViewPlayerOne.setImage(im);
+                Image im2 = new javafx.scene.image.Image("Card/" + Integer.toString(temp[2]) + ".png");
+                imageViewPlayerTwo.setImage(im2);
+            } else if (temp[2] != 0) {
+                Image im = new javafx.scene.image.Image("Card/" + Integer.toString(temp[2]) + ".png");
+                imageViewPlayerTwo.setImage(im);
+            } else if (temp[1] != 0) {
+                Image im = new javafx.scene.image.Image("Card/" + Integer.toString(temp[1]) + ".png");
+                imageViewPlayerOne.setImage(im);
+            }
+        } else if (modelClientGame.getIdPlayer() == 1) {
+            if (temp[2] != 0 && temp[0] != 0) {
+                Image im = new javafx.scene.image.Image("Card/" + Integer.toString(temp[2]) + ".png");
+                imageViewPlayerOne.setImage(im);
+                Image im2 = new javafx.scene.image.Image("Card/" + Integer.toString(temp[0]) + ".png");
+                imageViewPlayerTwo.setImage(im2);
+            } else if (temp[0] != 0) {
+                Image im = new javafx.scene.image.Image("Card/" + Integer.toString(temp[0]) + ".png");
+                imageViewPlayerTwo.setImage(im);
+            } else if (temp[2] != 0) {
+                Image im = new javafx.scene.image.Image("Card/" + Integer.toString(temp[2]) + ".png");
+                imageViewPlayerOne.setImage(im);
+            }
+        } else if (modelClientGame.getIdPlayer() == 2) {
+            if (temp[0] != 0 && temp[1] != 0) {
+                Image im = new javafx.scene.image.Image("Card/" + Integer.toString(temp[0]) + ".png");
+                imageViewPlayerOne.setImage(im);
+                Image im2 = new javafx.scene.image.Image("Card/" + Integer.toString(temp[1]) + ".png");
+                imageViewPlayerTwo.setImage(im2);
+            } else if (temp[1] != 0) {
+                Image im = new javafx.scene.image.Image("Card/" + Integer.toString(temp[1]) + ".png");
+                imageViewPlayerTwo.setImage(im);
+            } else if (temp[0] != 0) {
+                Image im = new javafx.scene.image.Image("Card/" + Integer.toString(temp[0]) + ".png");
+                imageViewPlayerOne.setImage(im);
+            }
+        }
+    }
+
+
 }
