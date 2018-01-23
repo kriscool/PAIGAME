@@ -103,8 +103,34 @@ public class CardGameController {
            System.out.println("Wszystkie karty wyjęte");
            stageGame.setEndOfTurnToCalculatePoints(1);
            stageGame.setGameState(1);
+           stageGame.setBid(0);
+           cardChooseToChang=0;
+           List<Auction> a = stageGame.getAuctions();
+           a.get(0).setOVer(false);
+           a.get(1).setOVer(false);
+           a.get(2).setOVer(false);
+           a.get(0).setPrice(0);
+           a.get(1).setPrice(0);
+           a.get(2).setPrice(0);
+           stageGame.setAuctions(a);
            output.writeObject(gson.toJson(stageGame));
            System.out.println("kilk");
+           first.setLayoutY(configuration.getYposition());
+           first.setLayoutX(configuration.getFirstCardPostion());
+           second.setLayoutX(configuration.getSecondCardPostion());
+           second.setLayoutY(configuration.getYposition());
+           thirdth.setLayoutX(configuration.getThirdCardPostion());
+           thirdth.setLayoutY(configuration.getYposition());
+           fourth.setLayoutX(configuration.getFourthCardPostion());
+           fourth.setLayoutY(configuration.getYposition());
+           fifth.setLayoutX(configuration.getFifthCardPostion());
+           fifth.setLayoutY(configuration.getYposition());
+           sixth.setLayoutX(configuration.getSixthCardPostion());
+           sixth.setLayoutY(configuration.getYposition());
+           seventh.setLayoutX(configuration.getSeventhCardPosition());
+           seventh.setLayoutY(configuration.getYposition());
+           cardsToChange.clear();
+
        }else
         if(stageGame.getEndOfTheGame()){
             text.setText("Gracz się wylogowal prosze wyjsc z gry");
@@ -635,7 +661,7 @@ public class CardGameController {
             imageViews[5] = sixth;
             imageViews[6] = seventh;
 
-            Messeges inputClass = new Messeges(isSelected,whichCardIsSelected,choose,stageGame.getIdplayer(), input, text, firstOponent, secondOponent, score1, score2, score3, stageGame, imageViews, idPlayer, auction, modelClientGame);
+            Messeges inputClass = new Messeges(pass,btnSetPoints,setBid,isSelected,whichCardIsSelected,choose,stageGame.getIdplayer(), input, text, firstOponent, secondOponent, score1, score2, score3, stageGame, imageViews, idPlayer, auction, modelClientGame);
             Thread t1 = new Thread(inputClass);
             t1.start();
 

@@ -155,12 +155,9 @@ public class Threads  implements Runnable{
 
         //System.out.print(gson.toJson(response));
 		if(response.isThreeCardPuts()){
-            response.setPlayerTurn(changePlayer(response.getPlayerTurn()));
-            game.sentToRoom(gson.toJson(response), output.toString());
-            //Tutaj będzie sprawdzane kto wygrał
+
             int whoWIn=whoWin(response);
-            response.setEndOfTurn(true);
-            response.setPlayerTurn(whoWin(response));
+            //System.out.print("1 "+tatCardssss[0] +"2 "+ tatCardssss[1] +"3 "+   tatCardssss[2]);
             int[] tabTemp = response.getCardsPuts();
             for(int i=0;i<3;i++){
                 if(whoWIn==1){
@@ -171,9 +168,18 @@ public class Threads  implements Runnable{
                     response.getThirdPlayer().add(tabTemp[i]);
                 }
             }
+            response.setPlayerTurn(whoWin(response));
+            //response.setPlayerTurn(changePlayer(response.getPlayerTurn()));
+            game.sentToRoom(gson.toJson(response), output.toString());
+            //Tutaj będzie sprawdzane kto wygrał
+            int[] tatCardssss = response.getCardsPuts();
+            System.out.print("1 "+tatCardssss[0] +"2 "+ tatCardssss[1] +"3 "+   tatCardssss[2]);
+            response.setEndOfTurn(true);
+
+
 
             response.setFirstCardPut(0);
-            System.out.println("Kto wygral"+Integer.toString(whoWin(response)));
+
            // System.out.println("Kozer " +Integer.toString(response.getColorChoice()));
             game.sentToRoom(gson.toJson(response), output.toString());
         }else if(response.isThreeCardNull()){
@@ -272,10 +278,15 @@ public class Threads  implements Runnable{
             for(int i=0;i<3;i++) {
                 if (tabTemp[i] > 0 && tabTemp[i] < 7) {
                     tempValue[i] = getValueOfCard(tabTemp[i]);
+
                 } else {
                     tabTemp[i] = 0;
                 }
             }
+           //System.out.println("Value of " + Integer.toString(tempValue[0]));
+          //  System.out.println("Value of " + Integer.toString(tempValue[1]));
+          //  System.out.println("Value of " + Integer.toString(tempValue[2]));
+          //  System.out.println("Wygrał"+Integer.toString(highestCard(tabTemp)));
                 return highestCard(tabTemp);
         } else if (firstCard > 6 && firstCard < 13) {
                 for(int i=0;i<3;i++) {
@@ -284,7 +295,12 @@ public class Threads  implements Runnable{
                     } else {
                         tabTemp[i] = 0;
                     }
-                }  tabTemp[indexOfCardSelected] = 0;
+                }
+
+          /*  System.out.println("Value of " + Integer.toString(tempValue[0]));
+            System.out.println("Value of " + Integer.toString(tempValue[1]));
+            System.out.println("Value of " + Integer.toString(tempValue[2]));
+            System.out.println("Wygrał"+Integer.toString(highestCard(tabTemp)));*/
                 return highestCard(tabTemp);
         } else if (firstCard > 12 && firstCard < 19) {
             for(int i=0;i<3;i++) {
@@ -293,7 +309,12 @@ public class Threads  implements Runnable{
                 } else {
                     tabTemp[i] = 0;
                 }
-            }  tabTemp[indexOfCardSelected] = 0;
+            }
+
+         /*   System.out.println("Value of " + Integer.toString(tempValue[0]));
+            System.out.println("Value of " + Integer.toString(tempValue[1]));
+            System.out.println("Value of " + Integer.toString(tempValue[2]));
+            System.out.println("Wygrał"+Integer.toString(highestCard(tabTemp)));*/
             return highestCard(tabTemp);
         } else if (firstCard > 18 && firstCard < 25) {
             for(int i=0;i<3;i++) {
@@ -302,7 +323,7 @@ public class Threads  implements Runnable{
                 } else {
                     tabTemp[i] = 0;
                 }
-            }  tabTemp[indexOfCardSelected] = 0;
+            }
             return highestCard(tabTemp);
         }
         return 4;
@@ -335,7 +356,7 @@ public class Threads  implements Runnable{
                 return 3;
             case 6:
                 return 4;
-            case 7:
+            case 0:
                 return 6;
         }
         return 0;

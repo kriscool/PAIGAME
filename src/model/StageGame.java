@@ -20,7 +20,8 @@ public class StageGame {
         cardDeal=false;
 
     }
-    public void StageGame(ArrayList<Integer> firstPlayer,ArrayList<Integer> secondPlayer,ArrayList<Integer> thirdPlayer,int playerTurn, Boolean endOfTheGame, Boolean endOfTurn, int colorChoice, int[] cardsPuts, int[] pointInTurn, List<Auction> auctions, int numberOfPlayers,int gameState,int whichPlayerWinAuction,int firstCardPut) {
+    public void StageGame(int[] pointsOfPlayer,ArrayList<Integer> firstPlayer,ArrayList<Integer> secondPlayer,ArrayList<Integer> thirdPlayer,int playerTurn, Boolean endOfTheGame, Boolean endOfTurn, int colorChoice, int[] cardsPuts, int[] pointInTurn, List<Auction> auctions, int numberOfPlayers,int gameState,int whichPlayerWinAuction,int firstCardPut) {
+        this.pointsOfPlayer=pointsOfPlayer;
         this.firstPlayer=firstPlayer;
         this.secondPlayer=secondPlayer;
         this.thirdPlayer=thirdPlayer;

@@ -1,6 +1,7 @@
 package network;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -33,9 +34,13 @@ public class Messeges implements Runnable {
     private ModelClientGame modelClientGame;
     private int whichCardIsSelected;
     private Boolean isSelected;
+    private Button start,pass,gram;
 
-    public Messeges(Boolean isSelected,int whichCard,ImageView colorChoice,int idlayer, ObjectInputStream in, Text javafxControol, ImageView imageViewPlayerOne, ImageView imageViewPlayerTwo, Text score, Text score1, Text score2, StageGame stageGame, ImageView[] imageViews, int idPlayer, Text auction, ModelClientGame modelClientGame){
-		this.isSelected=isSelected;
+    public Messeges(Button pass,Button start,Button gram,Boolean isSelected,int whichCard,ImageView colorChoice,int idlayer, ObjectInputStream in, Text javafxControol, ImageView imageViewPlayerOne, ImageView imageViewPlayerTwo, Text score, Text score1, Text score2, StageGame stageGame, ImageView[] imageViews, int idPlayer, Text auction, ModelClientGame modelClientGame){
+		this.pass=pass;
+		this.gram=gram;
+		this.start=start;
+        this.isSelected=isSelected;
         this.mes = in;
 		this.whichCardIsSelected=whichCard;
 		this.stageGame=stageGame;
@@ -81,12 +86,20 @@ public class Messeges implements Runnable {
                     modelClientGame.setIdPlayer(player);
                 }
                 System.out.println(message);
-               stageGame.StageGame(resultObject.getFirstPlayer(),resultObject.getSecondPlayer(),resultObject.getThirdPlayer(),resultObject.getPlayerTurn(),resultObject.getEndOfTheGame(),resultObject.getEndOfTurn(),resultObject.getColorChoice(),resultObject.getCardsPuts(),resultObject.getPointInTurn(),resultObject.getAuctions(),3,resultObject.getGameState(),resultObject.getWhichPlayerWinAuction(),resultObject.getFirstCardPut());
+               stageGame.StageGame(resultObject.getPointsOfPlayer() ,resultObject.getFirstPlayer(),resultObject.getSecondPlayer(),resultObject.getThirdPlayer(),resultObject.getPlayerTurn(),resultObject.getEndOfTheGame(),resultObject.getEndOfTurn(),resultObject.getColorChoice(),resultObject.getCardsPuts(),resultObject.getPointInTurn(),resultObject.getAuctions(),3,resultObject.getGameState(),resultObject.getWhichPlayerWinAuction(),resultObject.getFirstCardPut());
                int[] points = stageGame.getPointsOfPlayer();
                score.setText(Integer.toString(points[0]));
                 score1.setText(Integer.toString(points[1]));
                 score2.setText(Integer.toString(points[2]));
                 if(resultObject.getGameState()==2 && resultObject.getCardDeal()==true) {
+                    int x=50;
+                    for(int i=0;i<7;i++){
+                        imageViews[i].setLayoutY(500);
+                        imageViews[i].setLayoutX(x+(i*100));
+                    }
+                    start.setVisible(true);
+                    pass.setVisible(true);
+                    gram.setVisible(false);
                     String a = "Licytacja";
                     if(stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()){
                         a+=" Twój ruch";
@@ -131,7 +144,7 @@ public class Messeges implements Runnable {
                 }
                 if(stageGame.getFirstCardPut()!=0){
                     System.out.println("Zmien karty mozlwie do rzucenia");
-                    modelClientGame.setCardCanToBePut(stageGame.getFirstCardPut(),stageGame.getColorChoice());
+                    modelClientGame.setCardCanToBePut(stageGame.getFirstCardPut(),stageGame.getColorChoice(),imageViews);
                 }
                 if(resultObject.getGameState()==4){
                     String a = "Gramy o"+ Integer.toString(stageGame.getBid());

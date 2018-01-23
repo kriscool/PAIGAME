@@ -1,6 +1,7 @@
 package model;
 
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -50,7 +51,7 @@ public class ModelClientGame {
     public Boolean getCardCanBePut(int i){
         return cardCanBePut[i];
     }
-    public void setCardCanToBePut(int firstCard,int colorChoice){
+    public void setCardCanToBePut(int firstCard, int colorChoice, ImageView[] imageViews){
         int count=0;
         if(firstCard==0){
             for(int i=0;i<7;i++){
@@ -59,21 +60,21 @@ public class ModelClientGame {
         }else
         if(firstCard>0 && firstCard<7){
             for(int i=0;i<7;i++){
-                if(cards[i]>0 && cards[i]<7){
+                if(cards[i]>0 && cards[i]<7 && imageViews[i].getImage()!=null){
                     cardCanBePut[i]=true;
                     count++;
                 }
             }
-        }else  if(firstCard>6 && firstCard<13){
+        }else  if(firstCard>6 && firstCard<13 ){
             for(int i=0;i<7;i++){
-                if(cards[i]>6 && cards[i]<13){
+                if(cards[i]>6 && cards[i]<13 && imageViews[i].getImage()!=null){
                     cardCanBePut[i]=true;
                     count++;
                 }
             }
         }else  if(firstCard>12 && firstCard<19){
             for(int i=0;i<7;i++){
-                if(cards[i]>12 && cards[i]<19){
+                if(cards[i]>12 && cards[i]<19 && imageViews[i].getImage()!=null){
                     cardCanBePut[i]=true;
                     count++;
                 }
@@ -81,7 +82,7 @@ public class ModelClientGame {
 
         }else  if(firstCard>18 && firstCard<25){
             for(int i=0;i<7;i++){
-                if(cards[i]>18 && cards[i]<25){
+                if(cards[i]>18 && cards[i]<25 && imageViews[i].getImage()!=null){
                     cardCanBePut[i]=true;
                     count++;
                 }
