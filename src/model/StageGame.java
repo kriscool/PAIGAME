@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StageGame {
-
+    private int EndOfTurnToCalculatePoints=0;
     public StageGame(){
         this.endOfTheGame=false;
         this.endOfTurn=false;
@@ -20,7 +20,10 @@ public class StageGame {
         cardDeal=false;
 
     }
-    public void StageGame(int playerTurn, Boolean endOfTheGame, Boolean endOfTurn, int colorChoice, int[] cardsPuts, int[] pointInTurn, List<Auction> auctions, int numberOfPlayers,int gameState,int whichPlayerWinAuction,int firstCardPut) {
+    public void StageGame(ArrayList<Integer> firstPlayer,ArrayList<Integer> secondPlayer,ArrayList<Integer> thirdPlayer,int playerTurn, Boolean endOfTheGame, Boolean endOfTurn, int colorChoice, int[] cardsPuts, int[] pointInTurn, List<Auction> auctions, int numberOfPlayers,int gameState,int whichPlayerWinAuction,int firstCardPut) {
+        this.firstPlayer=firstPlayer;
+        this.secondPlayer=secondPlayer;
+        this.thirdPlayer=thirdPlayer;
         this.playerTurn = playerTurn;
         this.endOfTheGame = endOfTheGame;
         this.endOfTurn = endOfTurn;
@@ -107,6 +110,13 @@ public class StageGame {
     private int[] pointInTurn = new int [3];
     private int[] cardsToChange = new int[3];
     private int[][] cards = new int[4][7];
+    private int[][] cardPickUpPlayer = new int[3][];
+    private ArrayList<Integer> firstPlayer = new ArrayList<Integer>();
+    private int[] pointsOfPlayer = new int[3];
+
+    private ArrayList<Integer> secondPlayer = new ArrayList<Integer>();
+
+    private ArrayList<Integer> thirdPlayer = new ArrayList<Integer>();
     private List<Auction> auctions;
     private int numberOfPlayers=0;
     private int whichPairReport;
@@ -216,5 +226,53 @@ public class StageGame {
 
     public void setFirstCardPut(int firstCardPut) {
         this.firstCardPut = firstCardPut;
+    }
+
+    public int[][] getCardPickUpPlayer() {
+        return cardPickUpPlayer;
+    }
+
+    public void setCardPickUpPlayer(int[][] cardPickUpPlayer) {
+        this.cardPickUpPlayer = cardPickUpPlayer;
+    }
+
+    public ArrayList<Integer> getThirdPlayer() {
+        return thirdPlayer;
+    }
+
+    public void setThirdPlayer(ArrayList<Integer> thirdPlayer) {
+        this.thirdPlayer = thirdPlayer;
+    }
+
+    public ArrayList<Integer> getSecondPlayer() {
+        return secondPlayer;
+    }
+
+    public void setSecondPlayer(ArrayList<Integer> secondPlayer) {
+        this.secondPlayer = secondPlayer;
+    }
+
+    public ArrayList<Integer> getFirstPlayer() {
+        return firstPlayer;
+    }
+
+    public void setFirstPlayer(ArrayList<Integer> firstPlayer) {
+        this.firstPlayer = firstPlayer;
+    }
+
+    public int getEndOfTurnToCalculatePoints() {
+        return EndOfTurnToCalculatePoints;
+    }
+
+    public void setEndOfTurnToCalculatePoints(int endOfTurnToCalculatePoints) {
+        EndOfTurnToCalculatePoints = endOfTurnToCalculatePoints;
+    }
+
+    public int[] getPointsOfPlayer() {
+        return pointsOfPlayer;
+    }
+
+    public void setPointsOfPlayer(int[] pointsOfPlayer) {
+        this.pointsOfPlayer = pointsOfPlayer;
     }
 }

@@ -9,12 +9,15 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ModelClientGame {
+    private int isAllCardGet=0;
     private int idPlayer;
     private int[] cardToChange;
     private int[] cards = new int[7];
     private Socket clientSocket = null;
     private ObjectOutputStream output = null;
     private ObjectInputStream input = null;
+    private Boolean isSelected;
+    private int whichCardIsSelected;
     public void changeCardBeforeBid(int[] number, ArrayList<Integer> change){
         for(int i=0;i<3;i++) {
             switch (change.get(i)) {
@@ -49,6 +52,11 @@ public class ModelClientGame {
     }
     public void setCardCanToBePut(int firstCard,int colorChoice){
         int count=0;
+        if(firstCard==0){
+            for(int i=0;i<7;i++){
+                cardCanBePut[i]=true;
+            }
+        }else
         if(firstCard>0 && firstCard<7){
             for(int i=0;i<7;i++){
                 if(cards[i]>0 && cards[i]<7){
@@ -154,5 +162,29 @@ public class ModelClientGame {
 
     public void setCards(int[] cards) {
         this.cards = cards;
+    }
+
+    public Boolean getSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(Boolean selected) {
+        isSelected = selected;
+    }
+
+    public int getWhichCardIsSelected() {
+        return whichCardIsSelected;
+    }
+
+    public void setWhichCardIsSelected(int whichCardIsSelected) {
+        this.whichCardIsSelected = whichCardIsSelected;
+    }
+
+    public int getIsAllCardGet() {
+        return isAllCardGet;
+    }
+
+    public void setIsAllCardGet(int isAllCardGet) {
+        this.isAllCardGet = isAllCardGet;
     }
 }

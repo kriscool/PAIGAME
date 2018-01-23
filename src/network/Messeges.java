@@ -25,15 +25,19 @@ public class Messeges implements Runnable {
     private Text score2;
 	private StageGame stageGame;
     private ImageView imageViewPlayerOne;
-    private ImageView imageViewPlayerTwo;
+    private ImageView imageViewPlayerTwo,colorChoice;
     private ImageView[] imageViews;
     private int player;
     private Text auction;
     private int[] tabCardToChange=new int [3];
     private ModelClientGame modelClientGame;
+    private int whichCardIsSelected;
+    private Boolean isSelected;
 
-    public Messeges(int idlayer, ObjectInputStream in, Text javafxControol, ImageView imageViewPlayerOne, ImageView imageViewPlayerTwo, Text score, Text score1, Text score2, StageGame stageGame, ImageView[] imageViews, int idPlayer, Text auction, ModelClientGame modelClientGame){
-		this.mes = in;
+    public Messeges(Boolean isSelected,int whichCard,ImageView colorChoice,int idlayer, ObjectInputStream in, Text javafxControol, ImageView imageViewPlayerOne, ImageView imageViewPlayerTwo, Text score, Text score1, Text score2, StageGame stageGame, ImageView[] imageViews, int idPlayer, Text auction, ModelClientGame modelClientGame){
+		this.isSelected=isSelected;
+        this.mes = in;
+		this.whichCardIsSelected=whichCard;
 		this.stageGame=stageGame;
 		flag = true;
 		text=javafxControol;
@@ -47,10 +51,12 @@ public class Messeges implements Runnable {
         this.player=idPlayer;
         this.auction=auction;
         this.modelClientGame=modelClientGame;
+        this.colorChoice=colorChoice;
 	}
 	
 	public void run(){
 		while(true){
+
 			Object obj = null;
 			if(stageGame.getEndOfTheGame()==true){
                 System.exit(1);
@@ -66,18 +72,20 @@ public class Messeges implements Runnable {
 			}
             if(obj != null){
 				String message = obj.toString();
-				//System.out.println(message);
                 Gson gson = new GsonBuilder().create();
 
                 StageGame resultObject = gson.fromJson(message, StageGame.class);
-                //System.out.println(message);
                 if(resultObject.getId()==true){
                     player=resultObject.getIdplayer();
                     stageGame.setIdplayer(player);
                     modelClientGame.setIdPlayer(player);
                 }
-               stageGame.StageGame(resultObject.getPlayerTurn(),resultObject.getEndOfTheGame(),resultObject.getEndOfTurn(),resultObject.getColorChoice(),resultObject.getCardsPuts(),resultObject.getPointInTurn(),resultObject.getAuctions(),3,resultObject.getGameState(),resultObject.getWhichPlayerWinAuction(),resultObject.getFirstCardPut());
-
+                System.out.println(message);
+               stageGame.StageGame(resultObject.getFirstPlayer(),resultObject.getSecondPlayer(),resultObject.getThirdPlayer(),resultObject.getPlayerTurn(),resultObject.getEndOfTheGame(),resultObject.getEndOfTurn(),resultObject.getColorChoice(),resultObject.getCardsPuts(),resultObject.getPointInTurn(),resultObject.getAuctions(),3,resultObject.getGameState(),resultObject.getWhichPlayerWinAuction(),resultObject.getFirstCardPut());
+               int[] points = stageGame.getPointsOfPlayer();
+               score.setText(Integer.toString(points[0]));
+                score1.setText(Integer.toString(points[1]));
+                score2.setText(Integer.toString(points[2]));
                 if(resultObject.getGameState()==2 && resultObject.getCardDeal()==true) {
                     String a = "Licytacja";
                     if(stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()){
@@ -116,12 +124,13 @@ public class Messeges implements Runnable {
 				if(resultObject.getGameState()==3){
                     String a = "";
                     if(stageGame.getPlayerTurn()==modelClientGame.getIdPlayer()){
-                        a+=" Wybierz o ile grasz";
+                        a+="Wymien karty i nastepnie Wybierz o ile grasz";
                     }
                     text.setText(a);
                     stageGame.setCardsToChange(tabCardToChange);
                 }
                 if(stageGame.getFirstCardPut()!=0){
+                    System.out.println("Zmien karty mozlwie do rzucenia");
                     modelClientGame.setCardCanToBePut(stageGame.getFirstCardPut(),stageGame.getColorChoice());
                 }
                 if(resultObject.getGameState()==4){
@@ -130,16 +139,57 @@ public class Messeges implements Runnable {
                         a+=" Twój ruch";
                     }
                     text.setText(a);
+                    if(stageGame.getColorChoice()!=0){
+                        Image im ;
+                        switch (stageGame.getColorChoice()){
+                            case 1:
+                                im = new javafx.scene.image.Image("Card/żołądź.png");
+                                colorChoice.setImage(im);
+                                break;
+                            case 2:
+                                im = new javafx.scene.image.Image("Card/wino.png");
+                                colorChoice.setImage(im);
+                                break;
+                            case 3:
+                                im = new javafx.scene.image.Image("Card/czerwo.png");
+                                colorChoice.setImage(im);
+                                break;
+                            case 4:
+                                im = new javafx.scene.image.Image("Card/dzwonek.png");
+                                colorChoice.setImage(im);
+                                break;
+                        }
+                    }
                     setCardOnView(stageGame.getCardsPuts());
+                    if(stageGame.getEndOfTurn()==true){
+
+                        imageViewPlayerTwo.setImage(null);
+                        imageViewPlayerOne.setImage(null);
+                        for(int i=0;i<7;i++){
+                            if(imageViews[i].getLayoutY()==300){
+                                imageViews[i].setImage(null);
+                            }
+                        }
+
+                        isSelected=false;
+                        whichCardIsSelected=0;
+                        int[] tab = {0,0,0};
+                        stageGame.setCardsPuts(tab);
+                        modelClientGame.getCardCanBePut(0);
+                        //stageGame.setGameState(1);
+                        System.out.println(whichCardIsSelected);
+                    }
 				}
-				System.out.println(message);
-				if(message.equalsIgnoreCase("Dowidzenia")){
+
+				if(stageGame.getEndOfTheGame()){
 					flag = false;
-					System.exit(1);
+                    try {
+                        modelClientGame.closeScoket();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    System.exit(1);
 					break;
-				}
-				else{
-					//
 				}
 			}
 		}

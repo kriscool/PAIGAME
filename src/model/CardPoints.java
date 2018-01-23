@@ -1,10 +1,12 @@
 package model;
 
+import java.util.ArrayList;
+
 public class CardPoints {
 	public CardPoints(){
 	}
 	
-	public int GetPointsFromCard(int[] tabOfCard){
+	public int GetPointsFromCard(ArrayList<Integer> tabOfCard){
 		int sum=0;
 		for(int card:tabOfCard){
 			if(card%6==1){}
@@ -20,13 +22,13 @@ public class CardPoints {
 	public int GetPointFromKozer(int choice){
 		switch(choice){
 			case 1:
-				return 80;
-			case 2:
-				return 100;
-			case 3:
 				return 60;
-			case 4:
+			case 2:
 				return 40;
+			case 3:
+				return 100;
+			case 4:
+				return 80;
 		}
 		return choice;
 	}
